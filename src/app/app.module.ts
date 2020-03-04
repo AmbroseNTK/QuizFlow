@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NbThemeModule, NbLayoutModule, NbCardModule, NbButtonModule, NbInputModule, NbSidebarModule, NbListModule, NbDialogService, NbDialogModule, NbSelectModule, NbToastrModule, NbToastrService, NbSpinnerModule, NbSpinnerService, NbBadgeModule } from '@nebular/theme';
+import { NbThemeModule, NbLayoutModule, NbCardModule, NbButtonModule, NbInputModule, NbSidebarModule, NbListModule, NbDialogService, NbDialogModule, NbSelectModule, NbToastrModule, NbToastrService, NbSpinnerModule, NbSpinnerService, NbBadgeModule, NbProgressBarModule, NbTabsetModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { LoginComponent } from './pages/login/login.component';
 import { AngularFireModule } from '@angular/fire';
@@ -46,6 +46,8 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
     NbSelectModule,
     NbSpinnerModule,
     NbBadgeModule,
+    NbProgressBarModule,
+    NbTabsetModule,
     NbToastrModule.forRoot(),
     FormsModule,
     HttpClientModule,

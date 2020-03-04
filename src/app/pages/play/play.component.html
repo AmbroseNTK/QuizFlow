@@ -1,10 +1,74 @@
 <nb-layout>
   <nb-layout-column>
-    <nb-card [nbSpinner]="true" nbSpinnerSize="giant" nbSpinnerStatus="primary">
+    <nb-card *ngIf="!startedGame" [nbSpinner]="true" nbSpinnerSize="giant" nbSpinnerStatus="primary">
       <nb-card-header>
         Waiting for other players
       </nb-card-header>
       <nb-card-body>
+      </nb-card-body>
+    </nb-card>
+    <nb-card *ngIf="hasQuestion">
+      <nb-card-header>
+        {{question['data']['question']}}
+      </nb-card-header>
+      <nb-card-body>
+        <nb-progress-bar [value]="getTimePercent()"></nb-progress-bar>
+        <table style="width: 100%; height: 200px;">
+          <tr>
+            <td>
+              <button nbButton [status]="ans=='A'?'primary':'normal'" style="width: 100%;"
+                (click)="answer('A')">{{question['data']['answerA']}}</button>
+            </td>
+
+            <td>
+              <button nbButton [status]="ans=='B'?'primary':'normal'" style="width: 100%;"
+                (click)="answer('B')">{{question['data']['answerB']}}</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button nbButton [status]="ans=='C'?'primary':'normal'" style="width: 100%;"
+                (click)="answer('C')">{{question['data']['answerC']}}</button>
+            </td>
+
+            <td>
+              <button nbButton [status]="ans=='D'?'primary':'normal'" style="width: 100%;"
+                (click)="answer('D')">{{question['data']['answerD']}}</button>
+            </td>
+          </tr>
+        </table>
+      </nb-card-body>
+    </nb-card>
+    <nb-card *ngIf="hasQuestionResult">
+      <nb-card-header>
+        {{ans==correctAnswer?"Correct !!!":"Incorrect !!!"}}
+      </nb-card-header>
+      <nb-card-body>
+        {{question['data']['question']}}
+        <table style="width: 100%; height: 200px;">
+          <tr>
+            <td>
+              <button nbButton [status]="correctAnswer=='A'?'success':'normal'" style="width: 100%;"
+                (click)="answer('A')">{{question['data']['answerA']}}</button>
+            </td>
+
+            <td>
+              <button nbButton [status]="correctAnswer=='B'?'success':'normal'" style="width: 100%;"
+                (click)="answer('B')">{{question['data']['answerB']}}</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button nbButton [status]="correctAnswer=='C'?'success':'normal'" style="width: 100%;"
+                (click)="answer('C')">{{question['data']['answerC']}}</button>
+            </td>
+
+            <td>
+              <button nbButton [status]="correctAnswer=='D'?'success':'normal'" style="width: 100%;"
+                (click)="answer('D')">{{question['data']['answerD']}}</button>
+            </td>
+          </tr>
+        </table>
       </nb-card-body>
     </nb-card>
   </nb-layout-column>

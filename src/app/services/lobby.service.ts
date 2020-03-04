@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
+import { environment } from '../../environments/environment';
 import { Socket } from 'ngx-socket-io';
 import Events from '../events';
 
@@ -17,6 +17,9 @@ export class LobbyService {
 
   public onAcceptToJoin: () => void;
   public onRejectToJoin: () => void;
+  public onStartGame: () => void;
+  public onQuestion: (question) => void;
+  public onQuestionResult: (question) => void;
 
   public async fetch(uid) {
     let lobbies = await this.firestore.collection("lobby").ref.where("ownerId", "==", uid).get();
@@ -36,6 +39,13 @@ export class LobbyService {
     }
   }
 
+  public startGame(lobbyId) {
+    this.socket.emit("global", {
+      event: Events.sendStartGame,
+      lobbyId: lobbyId
+    });
+  }
+
   public joinLobby(lobbyId, uid, nickName) {
     this.socket.emit("global", {
       event: Events.joinLobby,
@@ -45,14 +55,59 @@ export class LobbyService {
     });
   }
 
+  public broadcastQuestion(quest) {
+    this.socket.emit("global", {
+      event: Events.sendQuestion,
+      ...quest
+    });
+  }
+
+  public sendResult(quest) {
+    this.socket.emit("global", {
+      event: Events.sendQuestionResult,
+      ...quest
+    });
+  }
+
+  public submitAnswer(lobbyId, questionId, uid, answer) {
+    this.socket.emit("global", {
+      event: Events.sendAnswer,
+      lobbyId: lobbyId,
+      questionId: questionId,
+      uid: uid,
+      answer: answer
+    });
+  }
+
+  public async clearQuestionResult(uid, lobbyId, questionId) {
+    let result = await this.httpClient.post(environment.apiEndpoint + "/lobby/clearResult", {
+      uid: uid,
+      lobbyId: lobbyId,
+      questionId: questionId
+    }).toPromise();
+    console.log(result);
+  }
+
   public listenToServer(uid) {
-    this.socket.on(uid, (data) => {
+    this.socket.fromEvent<any>(uid).subscribe((data) => {
+      console.log(data);
       let event = data.event;
       if (event == Events.acceptJoin) {
         this.onAcceptToJoin();
       }
       else if (event == Events.rejectJoin) {
         this.onRejectToJoin();
+      }
+      else if (event == Events.startGame) {
+        this.onStartGame();
+      }
+      else if (event == Events.question) {
+        this.onQuestion(data.question);
+      }
+      else if (event == Events.questionResult) {
+        if (this.onQuestionResult != null) {
+          this.onQuestionResult(data);
+        }
       }
     });
   }

@@ -1,7 +1,7 @@
 import { Component, TemplateRef } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { LobbyService } from './services/lobby.service';
-import { NbDialogService } from '@nebular/theme';
+import { NbDialogService, NbSidebarService } from '@nebular/theme';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,7 +13,7 @@ export class AppComponent {
   title = 'Kahoot';
   usr = null;
   lobbies = [];
-  constructor(public afAuth: AngularFireAuth, public lobby: LobbyService, public dialogService: NbDialogService, public router: Router) {
+  constructor(public afAuth: AngularFireAuth, public sidebarService: NbSidebarService, public lobby: LobbyService, public dialogService: NbDialogService, public router: Router) {
     afAuth.authState.subscribe(async usr => {
       this.usr = usr;
       console.log(usr);
@@ -21,6 +21,7 @@ export class AppComponent {
       this.lobbies = lobbies;
       console.log(lobbies);
     });
+    this.sidebarService.collapse();
   }
 
   createNewLobby(dialog: TemplateRef<any>) {
@@ -36,6 +37,14 @@ export class AppComponent {
 
   openLobby(id) {
     this.router.navigate(["lobby/" + id]);
+  }
+
+  onClickAccount() {
+    location.href = "/";
+  }
+
+  onClickCreateLobby() {
+    this.sidebarService.toggle();
   }
 
 }

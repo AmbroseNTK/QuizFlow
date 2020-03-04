@@ -12,10 +12,10 @@
 </ng-template>
 <nb-layout>
   <nb-layout-header fixed>
-    <h1>Kahoot</h1>
+    <h1>Quiz Flow</h1>
     <span style="flex: 1 auto"></span>
-    <button nbButton>Create Lobby</button>
-    <button nbButton status="normal" *ngIf="usr!=null" style="margin-left: 20px;">
+    <button nbButton (click)="onClickCreateLobby()">Create Lobby</button>
+    <button (click)="onClickAccount()" nbButton status="normal" *ngIf="usr!=null" style="margin-left: 20px;">
       <img [src]="usr.photoURL" style="width: 30px;border-radius: 50%;margin-right: 5px;">
       <span>
         {{usr.displayName}}

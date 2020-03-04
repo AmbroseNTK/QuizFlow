@@ -13,6 +13,8 @@
         <button *ngIf="!onAir" nbButton status="danger" (click)="deleteLobby()">Delete this lobby</button>
         <button *ngIf="!onAir" nbButton status="success" style="margin-left: 10px;" (click)="startStreaming()"> ▷ Start
           streaming</button>
+        <button *ngIf="onAir" nbButton status="success" style="margin-left: 10px;" (click)="startGame()"> ▷ Start
+          game</button>
         <button nbButton *ngIf="onAir" status="success" style="margin-left: 10px;" (click)="stopStreaming()"> ⏹ Stop
           streaming</button>
       </nb-card-footer>
@@ -20,71 +22,117 @@
     <nb-card *ngFor="let q of questions; let i = index">
       <nb-card-header>Question {{i}} - {{q.id}}</nb-card-header>
       <nb-card-body>
-        <table style="width: 100%; min-height: 200px;">
-          <tr>
-            <td>Question</td>
-            <td>{{q.data.question}}</td>
-          </tr>
-          <tr>
-            <td>Answer A <img *ngIf="q.data.correctAnswer=='A'"
-                src="https://image.flaticon.com/icons/svg/845/845646.svg" style="width: 20px;margin-left:10px;"></td>
-            <td>{{q.data.answerA}}
+        <nb-tabset>
+          <nb-tab tabTitle="Content">
+            <table style="width: 100%; min-height: 200px;">
+              <tr>
+                <td>Question</td>
+                <td>{{q.data.question}}</td>
+              </tr>
+              <tr>
+                <td>Answer A <img *ngIf="q.data.correctAnswer=='A'"
+                    src="https://image.flaticon.com/icons/svg/845/845646.svg" style="width: 20px;margin-left:10px;">
+                </td>
+                <td>{{q.data.answerA}}
 
-            </td>
-          </tr>
-          <tr>
-            <td>Answer B <img *ngIf="q.data.correctAnswer=='B'"
-                src="https://image.flaticon.com/icons/svg/845/845646.svg" style="width: 20px;margin-left:10px;"></td>
-            <td>{{q.data.answerB}}
+                </td>
+              </tr>
+              <tr>
+                <td>Answer B <img *ngIf="q.data.correctAnswer=='B'"
+                    src="https://image.flaticon.com/icons/svg/845/845646.svg" style="width: 20px;margin-left:10px;">
+                </td>
+                <td>{{q.data.answerB}}
 
-            </td>
-          </tr>
-          <tr>
-            <td>Answer C <img *ngIf="q.data.correctAnswer=='C'"
-                src="https://image.flaticon.com/icons/svg/845/845646.svg" style="width: 20px;margin-left:10px;"></td>
-            <td>{{q.data.answerC}}
+                </td>
+              </tr>
+              <tr>
+                <td>Answer C <img *ngIf="q.data.correctAnswer=='C'"
+                    src="https://image.flaticon.com/icons/svg/845/845646.svg" style="width: 20px;margin-left:10px;">
+                </td>
+                <td>{{q.data.answerC}}
 
-            </td>
-          </tr>
-          <tr>
-            <td>Answer D <img *ngIf="q.data.correctAnswer=='D'"
-                src="https://image.flaticon.com/icons/svg/845/845646.svg" style="width: 20px;margin-left:10px;"></td>
-            <td>{{q.data.answerD}}
+                </td>
+              </tr>
+              <tr>
+                <td>Answer D <img *ngIf="q.data.correctAnswer=='D'"
+                    src="https://image.flaticon.com/icons/svg/845/845646.svg" style="width: 20px;margin-left:10px;">
+                </td>
+                <td>{{q.data.answerD}}
 
-            </td>
-          </tr>
-          <tr>
-            <td>Timeout</td>
-            <td>{{q.data.timeout}} s</td>
-          </tr>
-        </table>
+                </td>
+              </tr>
+              <tr>
+                <td>Timeout</td>
+                <td>{{q.data.timeout}} s</td>
+              </tr>
+            </table>
+          </nb-tab>
+          <nb-tab tabTitle="Result">
+            Answer A
+            <nb-progress-bar [status]="q.data.correctAnswer=='A'?'success':'danger'"
+              [value]="(statUserAnswer(q.id,'A').length/getAnswerFromQuestion(q.id).length*100)">
+              {{statUserAnswer(q.id,'A').length}}
+            </nb-progress-bar>
+            Answer B
+            <nb-progress-bar [status]="q.data.correctAnswer=='B'?'success':'danger'"
+              [value]="(statUserAnswer(q.id,'B').length/getAnswerFromQuestion(q.id).length*100)">
+              {{statUserAnswer(q.id,'B').length}}
+            </nb-progress-bar>
+            Answer C
+            <nb-progress-bar [status]="q.data.correctAnswer=='C'?'success':'danger'"
+              [value]="(statUserAnswer(q.id,'C').length/getAnswerFromQuestion(q.id).length*100)">
+              {{statUserAnswer(q.id,'C').length}}
+            </nb-progress-bar>
+            Answer D
+            <nb-progress-bar [status]="q.data.correctAnswer=='D'?'success':'danger'"
+              [value]="(statUserAnswer(q.id,'D').length/getAnswerFromQuestion(q.id).length*100)">
+              {{statUserAnswer(q.id,'D').length}}
+            </nb-progress-bar>
+            <br>
+            <h4>User Answers</h4>
+            <nb-list style="width: 100%;">
+              <nb-list-item *ngFor="let ans of getAnswerFromQuestion(q.id)">
+                {{ans.nickname}}
+                <span style="flex: 1;"></span>
+                {{ans.answer}}
+              </nb-list-item>
+            </nb-list>
+          </nb-tab>
+        </nb-tabset>
+
       </nb-card-body>
       <nb-card-footer>
         <button nbButton *ngIf="!onAir" status="primary" (click)="selectQuestion(q)">Select</button>
-        <button nbButton *ngIf="onAir" status="primary" (click)="broadcastQuestion(q)">Broadcast</button>
+        <button nbButton *ngIf="onAir" status="primary" (click)="broadcastQuestion(i,q)"
+          style="margin-left: 10px;">Broadcast</button>
+        <button nbButton *ngIf="onAir" status="primary" (click)="sendResult(q)" style="margin-left: 10px;">Send
+          Result</button>
+        <button nbButton *ngIf="!onAir" status="primary" (click)="clearResult(q)" style="margin-left: 10px;">Clear
+          Result</button>
+
       </nb-card-footer>
     </nb-card>
     <nb-card *ngIf="!onAir">
       <nb-card-header>Add new question</nb-card-header>
       <nb-card-body>
         Question
-        <input nbInput style="width: 100%;" [(ngModel)]="question">
+        <textarea nbInput style="width: 100%;" fullWidth [(ngModel)]="question"></textarea>
         <br>
         <table style="width: 100%;min-height: 200px;">
           <tr>
             <td>
-              A: <input nbInput style="width: 100%;" [(ngModel)]="answerA">
+              A: <input nbInput style="width: 100%;" fullWidth [(ngModel)]="answerA">
             </td>
             <td>
-              B: <input nbInput style="width: 100%;" [(ngModel)]="answerB">
+              B: <input nbInput style="width: 100%;" fullWidth [(ngModel)]="answerB">
             </td>
           </tr>
           <tr>
             <td>
-              C: <input nbInput style="width: 100%;" [(ngModel)]="answerC">
+              C: <input nbInput style="width: 100%;" fullWidth [(ngModel)]="answerC">
             </td>
             <td>
-              D: <input nbInput style="width: 100%;" [(ngModel)]="answerD">
+              D: <input nbInput style="width: 100%;" fullWidth [(ngModel)]="answerD">
             </td>
           </tr>
           <tr>

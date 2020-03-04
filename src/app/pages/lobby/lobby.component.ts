@@ -17,6 +17,7 @@ export class LobbyComponent implements OnInit {
 
   selectedLobby = undefined;
   questions = [];
+  answers = [];
 
   questionId = "";
   question = "";
@@ -29,14 +30,44 @@ export class LobbyComponent implements OnInit {
 
   onAir = false;
 
+  private updateAnswer(uid, qid, answer, nickname) {
+    if (this.answers.filter((ans => ans.uid == uid && ans.qid == qid)).length == 0) {
+      this.answers.push({
+        uid: uid,
+        qid: qid,
+        answer: answer,
+        nickname: nickname
+      });
+    }
+    else {
+      this.answers.filter((ans => ans.uid == uid && ans.qid == qid))[0].answer = answer;
+    }
+  }
+
+  public statUserAnswer(qid, answer) {
+    return this.answers.filter(ans => ans.qid == qid && ans.answer == answer);
+  }
+
+  public getAnswerFromQuestion(qid) {
+    return this.answers.filter(ans => ans.qid == qid);
+  }
+
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(params => {
       this.selectedLobby = this.lobby.cachedLobbies.filter(l => l.id == params.id)[0];
       if (this.selectedLobby != undefined) {
-        this.db.collection("lobby").doc(this.selectedLobby.id).ref.collection("questions").onSnapshot((snapshot) => {
+        let questions = this.db.collection("lobby").doc(this.selectedLobby.id).ref.collection("questions");
+        questions.onSnapshot((snapshot) => {
           this.questions = [];
           snapshot.docs.map(doc => {
+            questions.doc(doc.id).collection("answers")
+              .onSnapshot(answersSnapshot => {
+                answersSnapshot.docs.map(ans => {
+                  this.updateAnswer(ans.id, ans.data().questionId, ans.data().answer, ans.data().nickname);
+                  console.log(this.answers);
+                })
+              })
             this.questions.push({
               id: doc.id,
               data: {
@@ -150,8 +181,39 @@ export class LobbyComponent implements OnInit {
     this.onAir = false;
   }
 
-  broadcastQuestion(quest) {
+  startGame() {
+    this.lobby.startGame(this.selectedLobby.id);
+  }
 
+  broadcastQuestion(id, quest) {
+    this.lobby.broadcastQuestion({
+      lobbyId: this.selectedLobby.id,
+      question: {
+        numOfQuestion: id,
+        ...quest
+      }
+    });
+  }
+
+  sendResult(quest) {
+    this.lobby.sendResult({
+      lobbyId: this.selectedLobby.id,
+      data: {
+        questionId: quest.id,
+        ...quest.data
+      }
+    });
+  }
+
+  async clearResult(quest) {
+    console.log(quest.id);
+    try {
+      await this.lobby.clearQuestionResult(this.afAuth.auth.currentUser.uid, this.selectedLobby.id, quest.id);
+      this.toaster.success("Result cleaned", "Success");
+    }
+    catch{
+
+    }
   }
 
 }

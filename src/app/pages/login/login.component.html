@@ -1,11 +1,27 @@
 <nb-card>
   <nb-card-body>
     <div style="display: flex;flex-direction: column; justify-items: stretch;">
-      <button nbButton style="margin: 20px;" status="normal" (click)="loginWithGoogle()">Login with Google</button>
+      <button nbButton style="width: 100%;" status="normal" (click)="loginWithGoogle()">Login with Google</button>
       <div *ngIf="loggedIn">
-        <input nbInput placeholder="Enter Nickname" style="margin: 20px;" [(ngModel)]="nickname" />
-        <input nbInput placeholder="Enter Lobby ID" style="margin: 20px;" [(ngModel)]="lobbyId" />
-        <button nbButton style="margin: 20px;" (click)="join()">Join to play</button>
+        <table style="width: 100%; height: 200px;">
+          <tr>
+            <td>
+              <input nbInput placeholder="Enter Nickname" fullWidth [(ngModel)]="nickname" />
+            </td>
+
+
+          </tr>
+          <tr>
+            <td>
+              <input nbInput placeholder="Enter Lobby ID" fullWidth [(ngModel)]="lobbyId" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button nbButton style="width: 100%;" (click)="join()">Join to play</button>
+            </td>
+          </tr>
+        </table>
       </div>
 
     </div>

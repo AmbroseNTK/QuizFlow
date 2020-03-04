@@ -12,7 +12,9 @@ enum Events {
     sendStartGame = "SEND START GAME",
     startGame = "START GAME",
     startStreaming = "START STREAMING",
-    stopStreaming = "STOP STREAMING"
+    stopStreaming = "STOP STREAMING",
+    sendLeaderboard = "SEND LEADERBOARD",
+    leaderboard = "LEADERBOARD"
 }
 
 export default Events;

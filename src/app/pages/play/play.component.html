@@ -5,6 +5,11 @@
         Waiting for other players
       </nb-card-header>
       <nb-card-body>
+        <nb-list>
+          <nb-list-item *ngFor="let usr of participants">
+            {{usr.nickname}}
+          </nb-list-item>
+        </nb-list>
       </nb-card-body>
     </nb-card>
     <nb-card *ngIf="hasQuestion">
@@ -70,6 +75,25 @@
           </tr>
         </table>
       </nb-card-body>
+    </nb-card>
+    <nb-card *ngIf="hasLeaderboard" status="success">
+      <nb-card-header>Leaderboard</nb-card-header>
+      <nb-card-body>
+        <nb-list>
+          <nb-list-item *ngFor="let record of leaderboard">
+            <span style="font-size: 18px;">
+              {{record.nickname}}
+            </span>
+            <span style="flex: 1 auto;"></span>
+            <span style="font-size: 18px;">
+              {{record.correct}}
+            </span>
+          </nb-list-item>
+        </nb-list>
+      </nb-card-body>
+      <nb-card-footer>
+        <button nbButton status="primary" routerLink="/">Close and exit</button>
+      </nb-card-footer>
     </nb-card>
   </nb-layout-column>
 </nb-layout>

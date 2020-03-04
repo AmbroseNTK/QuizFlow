@@ -16,8 +16,10 @@ export class LoginComponent implements OnInit {
     this.lobby.onAcceptToJoin = this.onAcceptToJoin.bind(this);
     this.lobby.onRejectToJoin = this.onRejectToJoin.bind(this);
     this.afAuth.authState.subscribe(usr => {
-      this.loggedIn = true;
-      this.lobby.listenToServer(usr.uid);
+      if (usr != null) {
+        this.loggedIn = true;
+        this.lobby.listenToServer(usr.uid);
+      }
     });
   }
 
@@ -37,10 +39,16 @@ export class LoginComponent implements OnInit {
   onAcceptToJoin() {
     this.toaster.success("Joined", "Success", { duration: 2000 });
     this.router.navigate(["play/" + this.lobbyId]);
+    this.lobby.lobbyInfo['id'] = this.lobbyId;
   }
 
   onRejectToJoin() {
     this.toaster.danger("Failed to join this lobby", "Failed", { duration: 5000 });
+  }
+
+  async signOut() {
+    await this.afAuth.auth.signOut();
+    location.reload();
   }
 
 }

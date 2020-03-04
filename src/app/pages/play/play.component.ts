@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LobbyService } from 'src/app/services/lobby.service';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 @Component({
   templateUrl: './play.component.html',
@@ -8,20 +9,37 @@ import { AngularFireAuth } from '@angular/fire/auth';
 })
 export class PlayComponent implements OnInit {
 
-  constructor(public lobby: LobbyService, public afAuth: AngularFireAuth) { }
+  constructor(public lobby: LobbyService, public afAuth: AngularFireAuth, public db: AngularFirestore) { }
 
   startedGame = false;
   hasQuestion = false;
   hasQuestionResult = false;
+  hasLeaderboard = false;
   elapsedTime = 0;
   question = {};
   ans = "";
   correctAnswer = "";
+  leaderboard = {};
+
+  participants = [];
 
   ngOnInit() {
     this.lobby.onStartGame = this.onStartGame.bind(this);
     this.lobby.onQuestion = this.onQuestion.bind(this);
     this.lobby.onQuestionResult = this.onQuestionResult.bind(this);
+    this.lobby.onLeaderboard = this.onLeaderboard.bind(this);
+    window.addEventListener("beforeunload", function (e) {
+      var confirmationMessage = "Reload this page will make errors";
+      e.returnValue = confirmationMessage;
+      return confirmationMessage;
+    });
+    this.db.collection("lobby").doc(this.lobby.lobbyInfo['id']).collection("participants")
+      .snapshotChanges().subscribe(snapshot => {
+        this.participants = [];
+        for (let usr of snapshot) {
+          this.participants.push(usr.payload.doc.data());
+        }
+      })
   }
 
   onStartGame() {
@@ -51,6 +69,11 @@ export class PlayComponent implements OnInit {
     setTimeout(() => {
       this.hasQuestionResult = false;
     }, 5000);
+  }
+
+  onLeaderboard(leaderboard) {
+    this.hasLeaderboard = true;
+    this.leaderboard = leaderboard;
   }
 
   getTimePercent() {

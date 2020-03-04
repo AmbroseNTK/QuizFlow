@@ -15,6 +15,8 @@
           streaming</button>
         <button *ngIf="onAir" nbButton status="success" style="margin-left: 10px;" (click)="startGame()"> ▷ Start
           game</button>
+        <button *ngIf="onAir" nbButton status="success" style="margin-left: 10px;" (click)="sendLeaderboard()">Send
+          Leaderboard</button>
         <button nbButton *ngIf="onAir" status="success" style="margin-left: 10px;" (click)="stopStreaming()"> ⏹ Stop
           streaming</button>
       </nb-card-footer>

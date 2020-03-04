@@ -22,7 +22,7 @@
       </span>
     </button>
   </nb-layout-header>
-  <nb-sidebar>
+  <nb-sidebar state="collapsed">
     <nb-list>
       <nb-list-item *ngFor="let lobby of lobbies">
         <button nbButton status="normal" style="width: 100%;" (click)="openLobby(lobby.id)">{{lobby.name}} -

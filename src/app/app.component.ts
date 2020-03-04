@@ -15,13 +15,15 @@ export class AppComponent {
   lobbies = [];
   constructor(public afAuth: AngularFireAuth, public sidebarService: NbSidebarService, public lobby: LobbyService, public dialogService: NbDialogService, public router: Router) {
     afAuth.authState.subscribe(async usr => {
-      this.usr = usr;
-      console.log(usr);
-      let lobbies = await this.lobby.fetch(usr.uid);
-      this.lobbies = lobbies;
-      console.log(lobbies);
+      if (usr != null) {
+        this.usr = usr;
+        console.log(usr);
+        let lobbies = await this.lobby.fetch(usr.uid);
+        this.lobbies = lobbies;
+        console.log(lobbies);
+      }
     });
-    this.sidebarService.collapse();
+    this.sidebarService.toggle(false);
   }
 
   createNewLobby(dialog: TemplateRef<any>) {

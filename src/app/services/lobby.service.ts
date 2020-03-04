@@ -20,6 +20,9 @@ export class LobbyService {
   public onStartGame: () => void;
   public onQuestion: (question) => void;
   public onQuestionResult: (question) => void;
+  public onLeaderboard: (leaderboard) => void;
+  public hasRegistered = false;
+  public lobbyInfo = {};
 
   public async fetch(uid) {
     let lobbies = await this.firestore.collection("lobby").ref.where("ownerId", "==", uid).get();
@@ -37,6 +40,14 @@ export class LobbyService {
     catch (err) {
 
     }
+  }
+
+  public startStreaming(uid, lobbyId) {
+    this.socket.emit("global", {
+      event: Events.sendStartStreaming,
+      lobbyId: lobbyId,
+      uid: uid
+    });
   }
 
   public startGame(lobbyId) {
@@ -88,27 +99,42 @@ export class LobbyService {
     console.log(result);
   }
 
-  public listenToServer(uid) {
-    this.socket.fromEvent<any>(uid).subscribe((data) => {
-      console.log(data);
-      let event = data.event;
-      if (event == Events.acceptJoin) {
-        this.onAcceptToJoin();
-      }
-      else if (event == Events.rejectJoin) {
-        this.onRejectToJoin();
-      }
-      else if (event == Events.startGame) {
-        this.onStartGame();
-      }
-      else if (event == Events.question) {
-        this.onQuestion(data.question);
-      }
-      else if (event == Events.questionResult) {
-        if (this.onQuestionResult != null) {
-          this.onQuestionResult(data);
-        }
-      }
+  public sendLeaderboard(lobbyId) {
+    this.socket.emit("global", {
+      event: Events.sendLeaderboard,
+      lobbyId: lobbyId
     });
+  }
+
+  public listenToServer(uid) {
+    if (!this.hasRegistered) {
+      this.socket.fromEvent<any>(uid).subscribe((data) => {
+        console.log(data);
+        let event = data.event;
+        if (event == Events.acceptJoin) {
+          this.onAcceptToJoin();
+        }
+        else if (event == Events.rejectJoin) {
+          this.onRejectToJoin();
+        }
+        else if (event == Events.startGame) {
+          this.onStartGame();
+        }
+        else if (event == Events.question) {
+          this.onQuestion(data.question);
+        }
+        else if (event == Events.questionResult) {
+          if (this.onQuestionResult != null) {
+            this.onQuestionResult(data);
+          }
+        }
+        else if (event == Events.leaderboard) {
+          if (this.onLeaderboard != null) {
+            this.onLeaderboard(data.leaderboard);
+          }
+        }
+      });
+      this.hasRegistered = true;
+    }
   }
 }

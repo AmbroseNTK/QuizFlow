@@ -80,6 +80,11 @@ export class LobbyComponent implements OnInit {
         })
       }
     });
+    window.addEventListener("beforeunload", function (e) {
+      var confirmationMessage = "Reload this page will make errors";
+      e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
+      return confirmationMessage;              // Gecko, WebKit, Chrome <34
+    });
   }
 
 
@@ -175,6 +180,7 @@ export class LobbyComponent implements OnInit {
 
   startStreaming() {
     this.onAir = true;
+    this.lobby.startStreaming(this.afAuth.auth.currentUser.uid, this.selectedLobby.id);
   }
 
   stopStreaming() {
@@ -214,6 +220,10 @@ export class LobbyComponent implements OnInit {
     catch{
 
     }
+  }
+
+  sendLeaderboard() {
+    this.lobby.sendLeaderboard(this.selectedLobby.id);
   }
 
 }

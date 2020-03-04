@@ -14,7 +14,7 @@ export const environment = {
     appId: "1:83688626834:web:e49f0a1f9f12fd28ac644b",
     measurementId: "G-E1L2J0GM8C"
   },
-  apiEndpoint: "http://localhost:3000"
+  apiEndpoint: "https://server.k-stream.ml"
 };
 
 /*

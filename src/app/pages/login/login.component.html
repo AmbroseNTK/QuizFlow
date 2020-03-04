@@ -1,15 +1,14 @@
 <nb-card>
   <nb-card-body>
     <div style="display: flex;flex-direction: column; justify-items: stretch;">
-      <button nbButton style="width: 100%;" status="normal" (click)="loginWithGoogle()">Login with Google</button>
+      <button *ngIf="!loggedIn" nbButton style="width: 100%;" status="normal" (click)="loginWithGoogle()">Login with
+        Google</button>
       <div *ngIf="loggedIn">
         <table style="width: 100%; height: 200px;">
           <tr>
             <td>
               <input nbInput placeholder="Enter Nickname" fullWidth [(ngModel)]="nickname" />
             </td>
-
-
           </tr>
           <tr>
             <td>
@@ -19,6 +18,11 @@
           <tr>
             <td>
               <button nbButton style="width: 100%;" (click)="join()">Join to play</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button nbButton style="width: 100%;" (click)="signOut()">Sign Out</button>
             </td>
           </tr>
         </table>
